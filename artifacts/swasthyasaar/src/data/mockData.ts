@@ -8,6 +8,7 @@ export const mockPatients = [
     ashaAssigned: "Meera Singh",
     riskLevel: "HIGH",
     lastVisit: "2 days ago",
+    nextVisit: "Apr 12, 2026",
     details: "High blood pressure observed. Requires close monitoring.",
   },
   {
@@ -19,6 +20,7 @@ export const mockPatients = [
     ashaAssigned: "Lakshmi Behera",
     riskLevel: "CRITICAL",
     lastVisit: "4 hours ago",
+    nextVisit: "Apr 10, 2026",
     details: "BP 160/100, severe headache reported.",
   },
   {
@@ -30,6 +32,7 @@ export const mockPatients = [
     ashaAssigned: "Meera Singh",
     riskLevel: "MEDIUM",
     lastVisit: "1 week ago",
+    nextVisit: "Apr 18, 2026",
     details: "Slight anemia, advised iron supplements.",
   },
   {
@@ -41,6 +44,7 @@ export const mockPatients = [
     ashaAssigned: "Anita Pal",
     riskLevel: "MEDIUM",
     lastVisit: "3 days ago",
+    nextVisit: "Apr 15, 2026",
     details: "Fasting sugar 140 mg/dL.",
   },
   {
@@ -52,6 +56,7 @@ export const mockPatients = [
     ashaAssigned: "Savitri Devi",
     riskLevel: "HIGH",
     lastVisit: "5 days ago",
+    nextVisit: "Apr 11, 2026",
     details: "BP 150/95, missed medication last week.",
   },
   {
@@ -63,6 +68,7 @@ export const mockPatients = [
     ashaAssigned: "Anita Pal",
     riskLevel: "CRITICAL",
     lastVisit: "Yesterday",
+    nextVisit: "Apr 10, 2026",
     details: "Uncontrolled sugar, foot ulcer developing.",
   },
   {
@@ -74,6 +80,7 @@ export const mockPatients = [
     ashaAssigned: "Savitri Devi",
     riskLevel: "LOW",
     lastVisit: "1 week ago",
+    nextVisit: "Apr 20, 2026",
     details: "Healthy progression.",
   },
   {
@@ -85,6 +92,7 @@ export const mockPatients = [
     ashaAssigned: "Meera Singh",
     riskLevel: "HIGH",
     lastVisit: "Today",
+    nextVisit: "Apr 11, 2026",
     details: "Not feeding well, slight jaundice.",
   },
   {
@@ -96,6 +104,7 @@ export const mockPatients = [
     ashaAssigned: "Lakshmi Behera",
     riskLevel: "CRITICAL",
     lastVisit: "Today",
+    nextVisit: "Apr 10, 2026",
     details: "Fever 39C, lethargic.",
   },
   {
@@ -107,6 +116,7 @@ export const mockPatients = [
     ashaAssigned: "Meera Singh",
     riskLevel: "LOW",
     lastVisit: "2 weeks ago",
+    nextVisit: "Apr 22, 2026",
     details: "Regular checkup normal.",
   },
   {
@@ -118,6 +128,7 @@ export const mockPatients = [
     ashaAssigned: "Lakshmi Behera",
     riskLevel: "MEDIUM",
     lastVisit: "4 days ago",
+    nextVisit: "Apr 14, 2026",
     details: "Hb 9.5, advised diet change.",
   },
   {
@@ -129,6 +140,7 @@ export const mockPatients = [
     ashaAssigned: "Anita Pal",
     riskLevel: "LOW",
     lastVisit: "2 weeks ago",
+    nextVisit: "May 1, 2026",
     details: "Sugar controlled with medication.",
   },
   {
@@ -140,6 +152,7 @@ export const mockPatients = [
     ashaAssigned: "Savitri Devi",
     riskLevel: "HIGH",
     lastVisit: "Yesterday",
+    nextVisit: "Apr 10, 2026",
     details: "Past due date, monitoring for labor signs.",
   },
   {
@@ -151,6 +164,7 @@ export const mockPatients = [
     ashaAssigned: "Lakshmi Behera",
     riskLevel: "MEDIUM",
     lastVisit: "3 days ago",
+    nextVisit: "Apr 13, 2026",
     details: "Feeding improved, weight stable.",
   },
   {
@@ -162,6 +176,7 @@ export const mockPatients = [
     ashaAssigned: "Anita Pal",
     riskLevel: "MEDIUM",
     lastVisit: "1 week ago",
+    nextVisit: "Apr 17, 2026",
     details: "BP 135/85, continuing current dose.",
   }
 ];

@@ -80,6 +80,35 @@ export default function SupervisorDashboard() {
           </div>
         )}
 
+        <div className="mb-8">
+          <h2 className="text-lg font-bold font-heading mb-4 flex items-center gap-2">
+            <Clock className="w-5 h-5 text-secondary" />
+            Referral Bottlenecks
+          </h2>
+          <Card className="p-5 shadow-sm border-border">
+            <div className="space-y-4">
+              {[
+                { label: "Initiated — awaiting travel", cases: 3, widthPct: 60, barClass: "bg-destructive/60" },
+                { label: "Traveling to PHC", cases: 2, widthPct: 40, barClass: "bg-secondary/80" },
+                { label: "Pending PHC acknowledgment", cases: 1, widthPct: 20, barClass: "bg-blue-500" },
+              ].map((row) => (
+                <div key={row.label}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-sm font-medium text-foreground">{row.label}</span>
+                    <span className="text-xs font-bold bg-muted px-2 py-0.5 rounded-full">{row.cases} {row.cases === 1 ? "case" : "cases"}</span>
+                  </div>
+                  <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${row.barClass} transition-all duration-500`}
+                      style={{ width: `${row.widthPct}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="lg:col-span-2">
             <h2 className="text-lg font-bold font-heading mb-4">ASHA Performance (Today)</h2>

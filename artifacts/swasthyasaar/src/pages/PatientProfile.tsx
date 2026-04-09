@@ -5,9 +5,10 @@ import { mockPatients, mockChartData } from "@/data/mockData";
 import { RiskBadge } from "@/components/RiskBadge";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MapPin, Phone, Calendar, ChevronLeft, Activity, Edit3, ClipboardList } from "lucide-react";
+import { MapPin, Phone, Calendar, ChevronLeft, Activity, Edit3, ClipboardList, AlertTriangle, Clock } from "lucide-react";
 import { Link, useParams } from "wouter";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 export default function PatientProfile() {
   const { id } = useParams();
@@ -32,6 +33,44 @@ export default function PatientProfile() {
         <Link href="/asha-dashboard" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground mb-4 transition-colors">
           <ChevronLeft className="w-4 h-4 mr-1" /> Back to Dashboard
         </Link>
+
+        {(patient.riskLevel === "HIGH" || patient.riskLevel === "CRITICAL") && (
+          <div className="bg-destructive/5 border border-destructive rounded-2xl p-4 mb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle className="w-5 h-5 text-destructive" />
+              <h3 className="font-bold text-destructive font-heading">Emergency Action Required</h3>
+            </div>
+            <div className="space-y-2 mb-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-destructive/70 shrink-0" />
+                <span>Nearest PHC: <strong className="text-foreground">8 km away</strong></span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-destructive/70 shrink-0" />
+                <span>Ambulance ETA: <strong className="text-foreground">18 min</strong></span>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 border-destructive/30 text-destructive hover:bg-destructive/10"
+                onClick={() => toast({ title: "PHC Notified", description: "PHC has been informed of incoming patient." })}
+                data-testid="button-notify-phc"
+              >
+                <Phone className="w-3.5 h-3.5 mr-1" /> Notify PHC
+              </Button>
+              <Button
+                size="sm"
+                className="flex-1 bg-destructive hover:bg-destructive/90 text-white font-bold"
+                onClick={() => toast({ title: "Emergency Referral Triggered", description: "PHC notified. Ambulance dispatched." })}
+                data-testid="button-emergency-referral"
+              >
+                <AlertTriangle className="w-3.5 h-3.5 mr-1" /> Trigger Emergency
+              </Button>
+            </div>
+          </div>
+        )}
 
         <Card className="p-6 mb-6 shadow-md border-border bg-card relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-10 -mt-10 pointer-events-none"></div>
