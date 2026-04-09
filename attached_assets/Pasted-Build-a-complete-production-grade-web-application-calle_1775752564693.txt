@@ -1,0 +1,339 @@
+Build a complete, production-grade web application called "SwasthyaSaar AI" 
+— an AI-powered intelligent care orchestration system for India's frontline 
+health workers (ASHA workers). This is for a Harvard HSIL Hackathon 2026 
+and must look world-class, professional, and demo-ready.
+
+====================
+TECH STACK
+====================
+- React + Vite (frontend)
+- Tailwind CSS (styling)
+- React Router v6 (navigation)
+- Recharts (charts/analytics)
+- Web Speech API (voice input)
+- Lucide React (icons)
+- Mock data only — no real backend needed, use useState/localStorage
+- Mobile-first, fully responsive
+
+====================
+DESIGN SYSTEM
+====================
+Color Palette:
+- Primary: #0A6E4F (deep forest green — health, trust, India)
+- Secondary: #F5A623 (warm amber — urgency, energy)
+- Danger: #E63946 (red — high risk alerts)
+- Success: #2DC653 (green — safe/low risk)
+- Background: #F0F4F3 (soft off-white)
+- Card: #FFFFFF
+- Text Primary: #1A1A2E
+- Text Secondary: #6B7280
+- Accent: #E8F5E9
+
+Typography:
+- Headings: 'Poppins' (Google Font) — bold, modern
+- Body: 'Noto Sans' (Google Font) — readable, multilingual support
+- Numbers/Stats: 'Space Mono' — technical feel
+
+Design Style:
+- Clean, clinical but warm — NOT cold hospital white
+- Card-based layout with soft shadows
+- Rounded corners (border-radius: 16px on cards)
+- Gradient accents on key sections
+- Status badges with color coding
+- Smooth page transitions (fade in)
+- Micro-animations on hover (scale, shadow lift)
+- Mobile-first but desktop beautiful
+
+====================
+PAGES & ROUTES
+====================
+
+1. LANDING PAGE ("/")
+- Full-screen hero with gradient background (#0A6E4F to #1B4332)
+- App name "SwasthyaSaar AI" in large Poppins font, white
+- Tagline: "Empowering Every ASHA. Saving Every Life."
+- 3 stat counters animated: "1.3M+ ASHA Workers", "600M Rural Indians Served", "40% Preventable Deaths"
+- 3 feature cards: Voice AI, Risk Prediction, Care Pathways
+- Single CTA button: "Enter Dashboard" → goes to /login
+- Subtle background: India map outline faded in background
+- Footer: "Harvard HSIL Hackathon 2026 | Team SwasthyaSaar"
+
+2. LOGIN / ROLE SELECTION ("/login")
+- Clean centered card
+- Title: "Select Your Role"
+- 3 role cards with icons:
+  * ASHA Worker (stethoscope icon) → goes to /asha-dashboard
+  * Supervisor (chart icon) → goes to /supervisor-dashboard  
+  * Admin (settings icon) → goes to /admin
+- Each card has hover animation (lift + green border)
+- No password needed — just click role to enter (demo mode)
+- Small text: "Demo Mode — HSIL Hackathon 2026"
+
+3. ASHA WORKER DASHBOARD ("/asha-dashboard")
+- Top navbar: SwasthyaSaar logo + worker name "Sunita Devi" + village "Kalahandi, Odisha" + notification bell
+- Summary cards row (4 cards):
+  * Today's Patients: 12
+  * High Risk Alerts: 3 (red badge)
+  * Pending Referrals: 2
+  * Completed Visits: 7
+- Quick Action buttons (large, touch-friendly):
+  * "🎤 Voice Assessment" (primary green button, large)
+  * "🤰 Maternal Check" (amber button)
+  * "🫀 NCD Check" (blue button)
+  * "👶 Newborn Check" (purple button)
+- Recent Patients list (last 5):
+  * Name, Age, Risk Level badge (🔴🟡🟢), Last Visit date
+  * Click to open patient profile
+- Bottom navigation bar (mobile): Home, Patients, Voice, Alerts, Profile
+
+4. VOICE ASSESSMENT PAGE ("/voice-assessment")
+- Dark themed page (deep green background) for focus
+- Large circular mic button in center (pulsing animation when recording)
+- Status text: "Tap mic and speak patient symptoms"
+- Example prompt shown: "e.g. Pregnant woman, 8 months, headache, swelling in feet"
+- When mic tapped:
+  * Button turns red, pulse animation starts
+  * Status: "Listening..."
+  * After 3 seconds, show transcript text appearing
+- Mock transcription result appears below
+- AI Analysis card slides up from bottom showing:
+  * Detected Condition: "High-Risk Pregnancy (Possible Preeclampsia)"
+  * Risk Level: 🔴 CRITICAL
+  * Immediate Action: "Refer to PHC within 2 hours"
+  * Key Danger Signs Detected: "Headache ✓, Edema ✓, 8th month ✓"
+  * Recommended Steps: numbered list of 3-4 actions
+- Two buttons: "Save to Patient" | "New Assessment"
+- Show 3 example pre-filled scenarios as chips user can tap:
+  * "Pregnant, headache, swelling" → triggers high risk output
+  * "Newborn, not feeding, fever" → triggers critical output  
+  * "Diabetic, missed medication" → triggers medium risk output
+- Use Web Speech API for real voice input, but also allow tap-to-demo with mock data
+
+5. MATERNAL & NEWBORN RISK FORM ("/maternal-check")
+- Two tabs at top: "Maternal Health" | "Newborn Health"
+
+MATERNAL TAB:
+- Form with fields:
+  * Patient Name (text)
+  * Age (number, 15-45)
+  * Weeks of Pregnancy (slider 1-40)
+  * Hemoglobin Level (number)
+  * Blood Pressure Systolic (number)
+  * ANC Visits completed (0-8 radio buttons)
+  * Symptoms checklist: Headache, Swelling, Blurred vision, Abdominal pain, Bleeding, Reduced fetal movement
+  * Previous complications (yes/no toggle)
+  * Distance to nearest PHC in km (slider)
+- "Calculate Risk" button (large green)
+- Risk result card appears below:
+  * Risk Score: 0-100 (large number with color)
+  * Risk Category: Low/Medium/High/Critical with color badge
+  * Top 3 Risk Factors identified
+  * Recommended Action
+  * Save Patient button
+
+NEWBORN TAB:
+- Similar form for newborn assessment
+- Fields: Age in days, Weight, Feeding status, Temperature, Breathing rate, Color (normal/pale/blue)
+- Same risk output format
+
+6. NCD CHRONIC CARE TRACKER ("/ncd-tracker")
+- Two tabs: "Screen Patient" | "Care Pathway"
+
+SCREEN TAB:
+- NCD Risk Screening form:
+  * Age, Gender
+  * Blood Sugar (fasting)
+  * Blood Pressure
+  * BMI / Weight
+  * Smoking (yes/no)
+  * Family history checkboxes (Diabetes, Heart disease, Stroke)
+  * Physical activity level (Low/Medium/High)
+  * Symptoms: Frequent urination, Excessive thirst, Chest pain, Breathlessness
+- Risk Output:
+  * Diabetes Risk Score
+  * Cardiovascular Risk Score
+  * Combined risk level
+  * Recommended pathway
+
+CARE PATHWAY TAB:
+- Visual step-by-step care pathway (timeline style):
+  * Step 1: Initial Screening ✅
+  * Step 2: Confirm Diagnosis 🔄
+  * Step 3: Treatment Initiation ⏳
+  * Step 4: Follow-up Schedule
+  * Step 5: Long-term Management
+- Current patient progress highlighted
+- Next action clearly shown
+- Medication reminders section
+- Follow-up date picker
+
+7. PATIENT PROFILE ("/patient/:id")
+- Patient header card: Photo placeholder, Name, Age, Village, ASHA assigned
+- Risk Timeline: visual chart showing risk level over past 6 months
+- Health Summary tabs: Maternal | NCD | General
+- Recent Assessments list with dates and risk levels
+- Referral History
+- Notes section
+- Emergency contact
+- Edit button for ASHA to update
+
+8. SUPERVISOR DASHBOARD ("/supervisor-dashboard")
+- Header: "Block Health Supervisor — Kalahandi District"
+- Summary stats: Total Patients, High Risk Cases, Active ASHAs, Referrals Pending
+- PRIORITY ALERTS section (top of page, red border):
+  * List of all critical/high risk cases flagged today
+  * Patient name, ASHA name, condition, time flagged
+  * "View" and "Acknowledge" buttons
+- All ASHA Workers table:
+  * Name, Village, Patients Today, High Risk Count, Status (Active/Inactive)
+- District Health Heatmap:
+  * Simple grid map of villages colored by risk density (green/yellow/red)
+- Recent Referrals tracking table
+
+9. ANALYTICS PAGE ("/analytics")
+- Page title: "Health Intelligence Dashboard"
+- Time filter: This Week / This Month / This Quarter
+- Charts using Recharts:
+  * Line chart: Risk cases over time
+  * Bar chart: Condition distribution (Maternal / NCD / Newborn)
+  * Pie chart: Risk level distribution (Low/Medium/High/Critical)
+  * Area chart: Referral completion rate
+- Key metrics cards:
+  * Avg response time to high-risk alert
+  * Referral completion rate %
+  * Most common danger signs detected
+- Village-level comparison table
+
+10. REFERRAL MANAGEMENT ("/referrals")
+- Active Referrals list with status pipeline:
+  * Initiated → ASHA Notified → Patient Traveling → Received at PHC → Complete
+- Each referral card shows: Patient, Condition, Urgency, PHC Name, Time elapsed
+- Status update buttons
+- Add new referral button
+- Completed referrals history
+
+====================
+GLOBAL COMPONENTS
+====================
+
+NAVBAR (top):
+- Logo: leaf icon + "SwasthyaSaar AI" text
+- Current page breadcrumb
+- Notification bell with badge count
+- User avatar with role label
+
+BOTTOM NAV (mobile only):
+- Home | Patients | Voice (center, highlighted) | Alerts | More
+
+RISK BADGE COMPONENT:
+- 🟢 LOW — green background
+- 🟡 MEDIUM — amber background  
+- 🔴 HIGH — red background
+- ⚫ CRITICAL — dark red, pulsing animation
+
+ALERT TOAST:
+- Slide in from top right
+- Color coded by severity
+- Auto dismiss after 5 seconds
+
+LOADING STATES:
+- Skeleton screens (not spinners)
+- Smooth fade in when data loads
+
+====================
+MOCK DATA
+====================
+Create realistic mock data for:
+- 15 patients (mix of maternal, NCD, newborn cases)
+- 5 ASHA workers
+- 3 villages in Kalahandi, Odisha
+- Risk assessments history
+- Referral records
+- Use real Indian names (Sunita, Meera, Lakshmi, Parvati, etc.)
+- Use realistic Odisha village names
+
+====================
+RISK SCORING LOGIC (Frontend Mock)
+====================
+
+MATERNAL RISK SCORE (calculate in JavaScript):
+- Age < 18 or > 35: +20 points
+- Hemoglobin < 7: +25 points, < 10: +15 points
+- BP Systolic > 140: +30 points
+- ANC visits < 3: +20 points
+- Any danger sign checked: +10 each
+- Previous complications: +15 points
+- Distance > 10km: +10 points
+- Total 0-40: LOW, 41-60: MEDIUM, 61-80: HIGH, 81+: CRITICAL
+
+NCD RISK SCORE:
+- Fasting sugar > 126: +30, > 100: +15
+- BP > 140: +25
+- Age > 45: +15
+- Smoking: +20
+- Family history: +10 each
+- Sedentary lifestyle: +15
+- Total scoring similar bands
+
+NEWBORN RISK SCORE:
+- Temperature > 38 or < 36: +25
+- Not feeding: +30
+- Abnormal breathing: +30
+- Blue/pale color: +35
+- Weight < 2kg: +20
+
+====================
+VOICE AI MOCK LOGIC
+====================
+When user speaks or taps demo chips:
+- Parse keywords from transcript
+- "pregnant" + "headache" + "swelling" → maternal high risk response
+- "newborn" + "fever" + "not feeding" → newborn critical response
+- "diabetic" + "missed" → NCD medium risk response
+- Show typewriter animation for AI response text
+- Animate risk badge appearing
+
+====================
+ANIMATIONS & UX DETAILS
+====================
+- Page transitions: fade in 300ms
+- Cards: hover lifts with box-shadow
+- Buttons: scale(1.02) on hover, scale(0.98) on click
+- Risk badges: pulse animation for CRITICAL level
+- Voice button: ripple + pulse when recording
+- Stats on landing page: count up animation
+- Form submission: loading spinner then result slides in
+- Skeleton loaders on patient list
+- Smooth scroll throughout
+- Toast notifications for save actions
+
+====================
+SPECIAL DEMO FEATURES
+====================
+Add a floating "DEMO MODE" banner at top in amber
+Add a "Quick Demo" floating button that runs through
+a pre-scripted demo scenario automatically:
+1. Navigates to voice assessment
+2. Shows mic activating
+3. Shows transcript appearing
+4. Shows risk result appearing
+All with timed delays so judges can watch without interaction
+
+====================
+RESPONSIVENESS
+====================
+- Mobile (320px+): Single column, bottom nav, large touch targets
+- Tablet (768px+): Two column layout
+- Desktop (1024px+): Sidebar nav, multi-column dashboard
+
+====================
+IMPORTANT NOTES
+====================
+- All data is mock/simulated — no real API calls needed
+- Voice input uses browser Web Speech API (works in Chrome)
+- If voice not supported, show manual text input fallback
+- All forms should show results immediately (no loading delay)
+- Keep navigation simple — judges should never get lost
+- Every page must have a clear "back" button
+- Color coding must be consistent throughout
+- Make it feel like a real product, not a hackathon project
