@@ -1,4 +1,4 @@
-Build a complete, production-grade web application called "SwasthyaSaar AI" 
+Build a complete, production-grade web application called "ArogyaSaathi AI" 
 — an AI-powered intelligent care orchestration system for India's frontline 
 health workers (ASHA workers). This is for a Harvard HSIL Hackathon 2026 
 and must look world-class, professional, and demo-ready.
@@ -50,7 +50,7 @@ PAGES & ROUTES
 
 1. LANDING PAGE ("/")
 - Full-screen hero with gradient background (#0A6E4F to #1B4332)
-- App name "SwasthyaSaar AI" in large Poppins font, white
+- App name "ArogyaSaathi AI" in large Poppins font, white
 - Tagline: "Empowering Every ASHA. Saving Every Life."
 - 3 stat counters animated: "1.3M+ ASHA Workers", "600M Rural Indians Served", "40% Preventable Deaths"
 - 3 feature cards: Voice AI, Risk Prediction, Care Pathways
@@ -217,7 +217,7 @@ GLOBAL COMPONENTS
 ====================
 
 NAVBAR (top):
-- Logo: leaf icon + "SwasthyaSaar AI" text
+- Logo: leaf icon + "ArogyaSaathi AI" text
 - Current page breadcrumb
 - Notification bell with badge count
 - User avatar with role label

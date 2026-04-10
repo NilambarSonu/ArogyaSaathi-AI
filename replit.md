@@ -28,7 +28,7 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 
 ## Artifacts
 
-### SwasthyaSaar AI (`artifacts/swasthyasaar/`)
+### ArogyaSaathi AI (`artifacts/swasthyasaar/`)
 - **Type**: React + Vite frontend-only app
 - **Preview Path**: `/`
 - **Description**: AI-powered intelligent care orchestration system for India's ASHA frontline health workers

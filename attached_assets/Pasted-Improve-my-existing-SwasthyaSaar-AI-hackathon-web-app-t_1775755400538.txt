@@ -1,4 +1,4 @@
-Improve my existing SwasthyaSaar AI hackathon web app to make it feel like a real deployable public health product built for rural India.
+Improve my existing ArogyaSaathi AI hackathon web app to make it feel like a real deployable public health product built for rural India.
 
 Current stack and UI already exist:
 - Landing page
