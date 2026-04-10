@@ -12,10 +12,14 @@ root/
 ├── artifacts/
 │   ├── swasthyasaar/          # React/Vite frontend  (@workspace/swasthyasaar)
 │   └── api-server/            # Express/Node backend  (@workspace/api-server)
-├── lib/                       # Shared utilities (zod schemas, etc.)
+├── lib/
+│   ├── types/                 # Shared TypeScript interfaces (@workspace/types)
+│   ├── schemas/               # Shared Zod validation schemas (@workspace/schemas)
+│   └── api-zod/               # Auto-generated schemas (if applicable)
+├── docs/                      # Central API and Database documentation
 ├── scripts/                   # Workspace-level automation scripts
 ├── pnpm-workspace.yaml        # pnpm workspace config
-├── package.json               # Root package (dev tooling only)
+├── package.json               # Root package (dev tooling)
 └── tsconfig.base.json         # Shared TypeScript base config
 ```
 
@@ -65,29 +69,34 @@ src/
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Team Start
+
+A fast-path setup for backend developers and the broader team:
 
 ### Prerequisites
 - Node.js ≥ 18
 - pnpm ≥ 8 (`npm install -g pnpm`)
 
-### Install Dependencies
+### 1. Install Dependencies
 ```bash
 pnpm install
 ```
 
-### Run Frontend (Demo Mode)
-```powershell
-# Windows PowerShell
-$env:PORT=5000; $env:BASE_PATH='/'; pnpm --filter @workspace/swasthyasaar dev
-```
-Opens at **http://localhost:5000**
-
-### Run Backend API Server
+### 2. Run the Stack Locally
+Start both Frontend and Backend concurrently from the root directory:
 ```bash
-pnpm --filter @workspace/api-server dev
+pnpm dev
 ```
-Runs at **http://localhost:3000**
+Alternatively, run them individually:
+```bash
+pnpm dev:frontend
+pnpm dev:backend
+```
+
+- **Frontend**: http://localhost:5000 (Demo Mode default)
+- **Backend**: http://localhost:3000 (API endpoints)
+
+Check the shared `docs/API_CONTRACT.md` and `docs/DATA_MODEL.md` to see exactly what shapes the UI expects.
 
 ---
 
@@ -121,7 +130,21 @@ cp artifacts/api-server/.env.example    artifacts/api-server/.env
 
 ## 🛠️ Backend Integration Guide (for Backend Teammate)
 
-The frontend is **fully decoupled** from the backend via a service layer in `src/services/`. Switching from demo mode to live API requires no component changes — only environment variables.
+The frontend is **fully decoupled** from the backend via a service layer in `src/services/`.
+Changes happen exclusively at the API layer, freeing you to work on `api-server` without touching React.
+
+### Architecture Flow
+```text
+┌─────────────┐       ┌────────────────────┐       ┌───────────────────┐
+│ React Pages │ ────► │ src/services/*     │ ────► │ artifacts/api-server│
+│ /components │       │ (apiClient.ts)     │       │ (Express Routes)  │
+└─────────────┘       └────────────────────┘       └───────────────────┘
+```
+
+### Strict Mock vs. Live Rules
+Components *must never* import mock arrays directly. 
+Mocks reside exclusively within `src/mock/` and are conditionally intercepted inside `apiClient.ts` based on `VITE_USE_MOCK`.
+This ensures that setting `VITE_USE_MOCK=false` immediately flips all UI fetch calls to actual API requests on `http://localhost:3000/api/*`.
 
 ### Step 1: Set Mock to Off
 In `artifacts/swasthyasaar/.env`:
@@ -131,10 +154,9 @@ VITE_API_URL=http://your-backend-url
 ```
 
 ### Step 2: Implement DB Layer
-Replace the static seed arrays in:
-- `api-server/src/routes/patients.ts` → query your patients table
-- `api-server/src/routes/assessments.ts` → insert/query assessments
-- `api-server/src/routes/analytics.ts` → aggregate queries
+Replace the static seed arrays in `artifacts/api-server`. Wait, they use typings from `@workspace/types` directly!
+- `api-server/src/routes/patients.ts` → query your patients database table
+- `api-server/src/routes/assessments.ts` → validated automatically using `@workspace/schemas` Zod parsers!
 
 ### Step 3: Add Auth Middleware
 All protected routes live in `api-server/src/routes/`. Add JWT middleware at the `api-server/src/routes/index.ts` level:
@@ -154,7 +176,7 @@ All API responses must follow this wrapper:
   code?: string;      // error code
 }
 ```
-Types are defined in `src/types/index.ts` — import and share via the `lib/` workspace package.
+All schema validations for requests reside in `lib/schemas/` and structural Types reside in `lib/types/`. Both Frontend and Backend import directly from `@workspace/schemas` and `@workspace/types`.
 
 ---
 
@@ -209,5 +231,6 @@ The app ships with full demo mode for hackathon presentations:
 1. Branch from `main`
 2. Frontend work → `artifacts/swasthyasaar/`
 3. Backend work → `artifacts/api-server/`
-4. Shared types → `artifacts/swasthyasaar/src/types/index.ts` (expose via `lib/` for BE parity)
-5. Open a PR targeting `main`
+4. Shared types → `lib/types/src/index.ts` (`@workspace/types`)
+5. Shared Zod schemas → `lib/schemas/src/index.ts` (`@workspace/schemas`)
+6. Open a PR targeting `main`

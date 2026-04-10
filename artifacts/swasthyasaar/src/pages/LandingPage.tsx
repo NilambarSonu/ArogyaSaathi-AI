@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { Mic, Activity, Heart } from "lucide-react";
+import { Mic, Activity, Heart, Presentation } from "lucide-react";
 import { DemoModeBanner } from "@/components/DemoModeBanner";
 import { QuickDemoButton } from "@/components/QuickDemoButton";
 
 export default function LandingPage() {
   const [workers, setWorkers] = useState(0);
-  const [indians, setIndians] = useState(0);
   const [deaths, setDeaths] = useState(0);
+  const [rural, setRural] = useState(0);
 
   useEffect(() => {
     const duration = 2000;
@@ -18,8 +18,8 @@ export default function LandingPage() {
     const timer = setInterval(() => {
       currentStep++;
       setWorkers(Math.min(1.3, (1.3 / steps) * currentStep));
-      setIndians(Math.min(600, (600 / steps) * currentStep));
-      setDeaths(Math.min(40, (40 / steps) * currentStep));
+      setDeaths(Math.min(300, (300 / steps) * currentStep));
+      setRural(Math.min(600, (600 / steps) * currentStep));
       
       if (currentStep >= steps) clearInterval(timer);
     }, interval);
@@ -44,57 +44,68 @@ export default function LandingPage() {
         </div>
         
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-4 drop-shadow-lg">
-          SwasthyaSaar <span className="text-[#F5A623]">AI</span>
+          ArogyaSaathi <span className="text-[#F5A623]">AI</span>
         </h1>
-        <p className="text-xl md:text-2xl font-medium text-white/90 mb-12 max-w-2xl">
-          Empowering Every ASHA. Saving Every Life.
+        <p className="text-xl md:text-2xl font-medium text-white/90 mb-12 max-w-2xl leading-relaxed">
+          AI-assisted maternal and newborn risk triage for frontline health workers.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 w-full max-w-4xl">
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+            <div className="text-4xl font-mono font-bold text-[#E63946] mb-2">{Math.floor(deaths)}k+</div>
+            <div className="text-sm font-medium text-white/80 uppercase tracking-wider">Preventable Maternal Deaths</div>
+          </div>
           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
             <div className="text-4xl font-mono font-bold text-[#F5A623] mb-2">{workers.toFixed(1)}M+</div>
             <div className="text-sm font-medium text-white/80 uppercase tracking-wider">ASHA Workers</div>
           </div>
           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-            <div className="text-4xl font-mono font-bold text-[#2DC653] mb-2">{Math.floor(indians)}M</div>
+            <div className="text-4xl font-mono font-bold text-[#2DC653] mb-2">{Math.floor(rural)}M</div>
             <div className="text-sm font-medium text-white/80 uppercase tracking-wider">Rural Indians Served</div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-            <div className="text-4xl font-mono font-bold text-[#E63946] mb-2">{Math.floor(deaths)}%</div>
-            <div className="text-sm font-medium text-white/80 uppercase tracking-wider">Preventable Deaths</div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12 max-w-4xl w-full">
           <div className="bg-white text-[#1A1A2E] rounded-xl p-5 hover-lift text-left shadow-xl">
             <Mic className="w-6 h-6 text-[#0A6E4F] mb-3" />
-            <h3 className="font-bold text-lg mb-1">Voice AI Assessment</h3>
-            <p className="text-sm text-[#6B7280]">Speak symptoms naturally. AI extracts clinical signs instantly.</p>
+            <h3 className="font-bold text-lg mb-1">Voice-First Triage</h3>
+            <p className="text-sm text-[#6B7280]">Natural language understanding for low-literacy environments.</p>
           </div>
           <div className="bg-white text-[#1A1A2E] rounded-xl p-5 hover-lift text-left shadow-xl">
             <Activity className="w-6 h-6 text-[#0A6E4F] mb-3" />
-            <h3 className="font-bold text-lg mb-1">Intelligent Risk</h3>
-            <p className="text-sm text-[#6B7280]">Real-time scoring to identify critical cases before they escalate.</p>
+            <h3 className="font-bold text-lg mb-1">Smart Danger Signs</h3>
+            <p className="text-sm text-[#6B7280]">Identify critical maternal & newborn risks instantly.</p>
           </div>
           <div className="bg-white text-[#1A1A2E] rounded-xl p-5 hover-lift text-left shadow-xl">
             <Heart className="w-6 h-6 text-[#0A6E4F] mb-3" />
-            <h3 className="font-bold text-lg mb-1">Guided Pathways</h3>
-            <p className="text-sm text-[#6B7280]">Step-by-step clinical protocols tailored for field conditions.</p>
+            <h3 className="font-bold text-lg mb-1">Escalate & Track</h3>
+            <p className="text-sm text-[#6B7280]">Connect field health workers to nearest PHCs securely.</p>
           </div>
         </div>
 
-        <Link 
-          href="/login" 
-          className="bg-[#F5A623] hover:bg-[#d98f1a] text-[#1A1A2E] font-bold text-lg px-8 py-4 rounded-full shadow-[0_0_20px_rgba(245,166,35,0.4)] transition-all hover:shadow-[0_0_30px_rgba(245,166,35,0.6)] active:scale-95 flex items-center gap-2"
-        >
-          Enter Dashboard 
-          <span className="text-xl">→</span>
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-4 items-center">
+          <Link 
+            href="/login" 
+            className="bg-white/10 hover:bg-white/20 text-white border border-white/30 font-bold text-lg px-8 py-4 rounded-full shadow-lg transition-all active:scale-95 flex items-center gap-2"
+          >
+            Enter Dashboard 
+            <span className="text-xl">→</span>
+          </Link>
+
+          <Link 
+            href="/voice-assessment?demo=judge" 
+            className="bg-[#F5A623] hover:bg-[#d98f1a] text-[#1A1A2E] font-bold text-lg px-8 py-4 rounded-full shadow-[0_0_20px_rgba(245,166,35,0.4)] transition-all hover:shadow-[0_0_30px_rgba(245,166,35,0.6)] active:scale-95 flex items-center gap-2"
+          >
+            <Presentation className="w-5 h-5" />
+            Start Judge Demo
+          </Link>
+        </div>
       </main>
 
       <footer className="py-6 text-center text-white/60 text-sm z-10">
-        Harvard HSIL Hackathon 2026 | Team SwasthyaSaar
+        Harvard HSIL Hackathon 2026 | Team ArogyaSaathi
       </footer>
     </div>
   );
 }
+

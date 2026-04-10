@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { logger } from "../lib/logger";
+import { VoiceAssessmentSchema, MaternalAssessmentSchema, NcdAssessmentSchema, NewbornAssessmentSchema, SaveAssessmentSchema } from "@workspace/schemas";
+import { RiskLevel } from "@workspace/types";
 
 const router = Router();
 
@@ -94,17 +96,19 @@ function getBand(score: number): string {
 
 // ─── POST /api/assess/voice ───────────────────────────────────────────────────
 router.post("/voice", (req, res) => {
-  const { transcript } = req.body as { transcript?: string };
+  const parseResult = VoiceAssessmentSchema.safeParse(req.body);
 
-  if (!transcript || typeof transcript !== "string") {
+  if (!parseResult.success) {
     res.status(400).json({
       success: false,
-      code: "MISSING_TRANSCRIPT",
-      message: "Request body must contain a `transcript` string field",
+      code: "INVALID_REQUEST",
+      message: "Request validation failed",
+      details: parseResult.error.format(),
     });
     return;
   }
 
+  const { transcript } = parseResult.data;
   const result = parseVoiceInput(transcript);
   logger.info({ riskLevel: result.riskLevel }, "POST /api/assess/voice");
   res.json(successResponse(result));
@@ -112,16 +116,19 @@ router.post("/voice", (req, res) => {
 
 // ─── POST /api/assess/maternal ────────────────────────────────────────────────
 router.post("/maternal", (req, res) => {
-  const data = req.body as {
-    age?: number;
-    hemoglobin?: number;
-    systolicBp?: number;
-    ancVisits?: number;
-    dangerSigns?: string[];
-    previousComplications?: boolean;
-    distanceToPhc?: number;
-  };
+  const parseResult = MaternalAssessmentSchema.safeParse(req.body);
 
+  if (!parseResult.success) {
+    res.status(400).json({
+      success: false,
+      code: "INVALID_REQUEST",
+      message: "Request validation failed",
+      details: parseResult.error.format(),
+    });
+    return;
+  }
+
+  const data = parseResult.data;
   let score = 0;
   if ((data.age ?? 0) < 18 || (data.age ?? 0) > 35) score += 20;
   if ((data.hemoglobin ?? 12) < 7) score += 25;
@@ -138,15 +145,19 @@ router.post("/maternal", (req, res) => {
 
 // ─── POST /api/assess/ncd ─────────────────────────────────────────────────────
 router.post("/ncd", (req, res) => {
-  const data = req.body as {
-    fastingSugar?: number;
-    systolicBp?: number;
-    age?: number;
-    smoking?: boolean;
-    familyHistory?: string[];
-    physicalActivity?: string;
-  };
+  const parseResult = NcdAssessmentSchema.safeParse(req.body);
 
+  if (!parseResult.success) {
+    res.status(400).json({
+      success: false,
+      code: "INVALID_REQUEST",
+      message: "Request validation failed",
+      details: parseResult.error.format(),
+    });
+    return;
+  }
+
+  const data = parseResult.data;
   let score = 0;
   if ((data.fastingSugar ?? 90) > 126) score += 30;
   else if ((data.fastingSugar ?? 90) > 100) score += 15;
@@ -162,14 +173,19 @@ router.post("/ncd", (req, res) => {
 
 // ─── POST /api/assess/newborn ─────────────────────────────────────────────────
 router.post("/newborn", (req, res) => {
-  const data = req.body as {
-    temperature?: number;
-    feeding?: string;
-    abnormalBreathing?: boolean;
-    skinColor?: string;
-    weight?: number;
-  };
+  const parseResult = NewbornAssessmentSchema.safeParse(req.body);
 
+  if (!parseResult.success) {
+    res.status(400).json({
+      success: false,
+      code: "INVALID_REQUEST",
+      message: "Request validation failed",
+      details: parseResult.error.format(),
+    });
+    return;
+  }
+
+  const data = parseResult.data;
   let score = 0;
   if ((data.temperature ?? 37) > 38 || (data.temperature ?? 37) < 36) score += 25;
   if (data.feeding === "Not feeding") score += 30;
@@ -183,20 +199,19 @@ router.post("/newborn", (req, res) => {
 
 // ─── POST /api/assessments (save to record) ───────────────────────────────────
 router.post("/", (req, res) => {
-  const { patientId, transcript, analysis } = req.body as {
-    patientId?: number;
-    transcript?: string;
-    analysis?: unknown;
-  };
+  const parseResult = SaveAssessmentSchema.safeParse(req.body);
 
-  if (!patientId || !transcript || !analysis) {
+  if (!parseResult.success) {
     res.status(400).json({
       success: false,
-      code: "MISSING_FIELDS",
-      message: "patientId, transcript, and analysis are required",
+      code: "INVALID_REQUEST",
+      message: "Request validation failed",
+      details: parseResult.error.format(),
     });
     return;
   }
+
+  const { patientId, transcript, analysis } = parseResult.data;
 
   // TODO: persist to database
   const savedId = `assessment-${Date.now()}`;

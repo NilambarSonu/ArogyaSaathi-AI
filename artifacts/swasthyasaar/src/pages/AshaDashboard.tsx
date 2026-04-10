@@ -5,7 +5,7 @@ import { StatCard } from "@/components/StatCard";
 import { PatientCard } from "@/components/PatientCard";
 import { TrustBadges } from "@/components/TrustBadges";
 import { mockPatients } from "@/data/mockData";
-import { Mic, Heart, Activity, User, Clock, ChevronDown, ChevronUp, Calendar } from "lucide-react";
+import { Mic, Heart, User, Clock, ChevronDown, ChevronUp, Calendar, Info } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -34,6 +34,19 @@ export default function AshaDashboard() {
           <h1 className="text-2xl font-bold mt-0.5">Overview</h1>
         </div>
 
+        {/* Mentor Storytelling Block */}
+        <div className="bg-gradient-to-r from-emerald-50 to-[#0A6E4F]/10 dark:from-[#0A6E4F]/20 dark:to-[#0A6E4F]/10 border border-[#0A6E4F]/30 rounded-2xl p-4 mb-6 shadow-sm">
+          <div className="flex items-start gap-3">
+            <Info className="w-5 h-5 text-[#0A6E4F] mt-0.5 shrink-0" />
+            <div>
+              <h3 className="font-bold text-[#0A6E4F] dark:text-emerald-400">Why this matters (Judge & Mentor Context)</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                This MVP targets the <strong>300k+ preventable maternal & newborn deaths</strong> annually. Instead of broad diagnostics, we hone the Voice AI into a rapid, 3-step danger-sign classifier explicitly for ASHA workers in remote villages where literacy is low.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StatCard
             title="Today's Patients"
@@ -51,13 +64,13 @@ export default function AshaDashboard() {
         </div>
 
         <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <Link href="/voice-assessment">
             <div className="bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-2xl p-4 flex flex-col items-center justify-center text-center gap-2 hover-lift cursor-pointer h-full transition-colors group" data-testid="action-voice">
               <div className="bg-primary text-primary-foreground p-3 rounded-full group-active:scale-95 transition-transform">
                 <Mic className="w-6 h-6" />
               </div>
-              <span className="font-semibold text-sm text-primary">Voice Assessment</span>
+              <span className="font-semibold text-sm text-primary">Voice Triage</span>
             </div>
           </Link>
           <Link href="/maternal-check">
@@ -66,14 +79,6 @@ export default function AshaDashboard() {
                 <Heart className="w-6 h-6" />
               </div>
               <span className="font-semibold text-sm text-rose-600 dark:text-rose-400">Maternal Check</span>
-            </div>
-          </Link>
-          <Link href="/ncd-tracker">
-            <div className="bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-2xl p-4 flex flex-col items-center justify-center text-center gap-2 hover-lift cursor-pointer h-full transition-colors group dark:bg-blue-950/30 dark:border-blue-900" data-testid="action-ncd">
-              <div className="bg-blue-500 text-white p-3 rounded-full group-active:scale-95 transition-transform">
-                <Activity className="w-6 h-6" />
-              </div>
-              <span className="font-semibold text-sm text-blue-600 dark:text-blue-400">NCD Check</span>
             </div>
           </Link>
           <Link href="/maternal-check?tab=newborn">
@@ -88,7 +93,7 @@ export default function AshaDashboard() {
 
         <TrustBadges />
 
-        <div className="mb-6">
+        <div className="mb-6 mt-6">
           <button
             onClick={() => setAlertsOpen(!alertsOpen)}
             className="flex items-center justify-between w-full mb-3 group"

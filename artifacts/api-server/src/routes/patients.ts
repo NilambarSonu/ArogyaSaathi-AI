@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { logger } from "../lib/logger";
+import { Patient } from "@workspace/types";
 
 const router = Router();
 
 // ────────────────────────────────────────────────────────────────────────────
 // Seed data (mirrors frontend mock — replace with DB queries when ready)
 // ────────────────────────────────────────────────────────────────────────────
-const mockPatients = [
+const mockPatients: Patient[] = [
   { id: 0, name: "Sunita Devi", age: 24, condition: "Pregnant 32 weeks", village: "Phulbani", ashaAssigned: "Meera Singh", riskLevel: "HIGH", lastVisit: "2 days ago", nextVisit: "Apr 12, 2026", details: "High blood pressure observed. Requires close monitoring." },
   { id: 1, name: "Parvati Nayak", age: 35, condition: "Pregnant 38 weeks", village: "Junagarh", ashaAssigned: "Lakshmi Behera", riskLevel: "CRITICAL", lastVisit: "4 hours ago", nextVisit: "Apr 10, 2026", details: "BP 160/100, severe headache reported." },
   { id: 2, name: "Radha Sahu", age: 19, condition: "Pregnant 28 weeks", village: "Kesinga", ashaAssigned: "Meera Singh", riskLevel: "MEDIUM", lastVisit: "1 week ago", nextVisit: "Apr 18, 2026", details: "Slight anemia, advised iron supplements." },

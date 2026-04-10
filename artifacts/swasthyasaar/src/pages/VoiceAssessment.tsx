@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Mic, Sparkles, CheckCircle2, ChevronLeft, RefreshCw, Save, AlertTriangle, Phone } from "lucide-react";
+import { Mic, Sparkles, CheckCircle2, ChevronLeft, RefreshCw, Save, AlertTriangle, Phone, Volume2, ShieldAlert } from "lucide-react";
 import { Link, useLocation, useSearch } from "wouter";
 import { parseVoiceInput, AIResponse } from "@/utils/voiceAI";
 import { RiskBadge } from "@/components/RiskBadge";
@@ -36,13 +36,35 @@ export default function VoiceAssessment() {
   const [transcriptDone, setTranscriptDone] = useState(false);
   const typeWriterIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // 3-Step Flow: 1 = Initial, 2 = Followup, 3 = Result
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+
   useEffect(() => {
-    if (searchString.includes("demo=true")) {
+    if (searchString.includes("demo=judge")) {
       setTimeout(() => {
-        handleDemoChip("Pregnant, headache, swelling");
-      }, 1500);
+        handleDemoChip("Pregnant 8 months, severe headache.");
+      }, 800);
     }
   }, [searchString]);
+
+  const simulateFollowUp = () => {
+    setStep(2);
+    setStatusText("Generating follow-up questions...");
+    setTimeout(() => {
+      setStatusText("Please ask the patient:");
+    }, 1500);
+  };
+
+  const handleFollowUpAnswer = (answer: string) => {
+    if (isRecording || isAnalyzing) return;
+    setIsRecording(true);
+    setStatusText(t.listening);
+    setTimeout(() => {
+      setIsRecording(false);
+      setStatusText(t.analyzingRisk);
+      runTypewriterAndAnalyze(transcript + ". " + answer);
+    }, 1200);
+  };
 
   const runTypewriterAndAnalyze = (fullText: string) => {
     setTranscript(fullText);
@@ -62,27 +84,31 @@ export default function VoiceAssessment() {
         if (typeWriterIntervalRef.current) clearInterval(typeWriterIntervalRef.current);
         setTranscriptDone(true);
         setIsAnalyzing(true);
-        setStatusText(t.analyzing);
+        setStatusText(t.analyzingRisk);
 
         setTimeout(() => {
           setIsAnalyzing(false);
           setStatusText("Analysis complete");
           setAnalysis(parseVoiceInput(fullText));
-        }, 1000);
+          setStep(3);
+        }, 1200);
       }
-    }, 120);
+    }, 100);
   };
 
   const toggleRecording = () => {
     if (isRecording) {
       setIsRecording(false);
       setStatusText("Processing audio...");
-      runTypewriterAndAnalyze("Pregnant woman, 8 months along, complaining of severe headache and swelling in feet for past two days.");
+      if (step === 1) {
+        setTranscript("Pregnant woman, severe headache.");
+        setDisplayedTranscript("Pregnant woman, severe headache.");
+        setTranscriptDone(true);
+        simulateFollowUp();
+      } else if (step === 2) {
+        runTypewriterAndAnalyze(transcript + ". Yes, swelling in feet for two days.");
+      }
     } else {
-      setAnalysis(null);
-      setTranscript("");
-      setDisplayedTranscript("");
-      setTranscriptDone(false);
       setIsRecording(true);
       setStatusText(t.listening);
     }
@@ -92,10 +118,14 @@ export default function VoiceAssessment() {
     if (isRecording || isAnalyzing) return;
     setIsRecording(true);
     setStatusText(t.listening);
+    
+    // Quick typing simulation for step 1
     setTimeout(() => {
-      setIsRecording(false);
-      setStatusText("Processing audio...");
-      runTypewriterAndAnalyze(text);
+        setIsRecording(false);
+        setTranscript(text);
+        setDisplayedTranscript(text);
+        setTranscriptDone(true);
+        simulateFollowUp();
     }, 1000);
   };
 
@@ -117,24 +147,54 @@ export default function VoiceAssessment() {
     setDisplayedTranscript("");
     setTranscriptDone(false);
     setStatusText("");
+    setStep(1);
   };
 
   const isCriticalOrHigh = analysis && (analysis.riskLevel === "CRITICAL" || analysis.riskLevel === "HIGH");
 
   return (
     <div className="min-h-screen bg-[#0A6E4F] flex flex-col fade-in text-white">
-      <header className="p-4 flex items-center justify-between sticky top-0 z-10 bg-[#0A6E4F]/90 backdrop-blur-sm">
+      <header className="p-4 flex items-center justify-between sticky top-0 z-10 bg-[#0A6E4F]/90 backdrop-blur-sm shadow-sm">
         <Link href="/asha-dashboard" className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors">
           <ChevronLeft className="w-6 h-6" />
         </Link>
-        <h1 className="font-heading font-bold text-lg">Voice AI Assessment</h1>
+        <h1 className="font-heading font-bold text-lg text-center flex-1">Voice AI Triage</h1>
         <div className="w-10"></div>
       </header>
 
-      <main className="flex-1 flex flex-col p-4 max-w-lg mx-auto w-full">
-        {!analysis && (
-          <div className="flex-1 flex flex-col items-center justify-center fade-in">
-            <div className="relative mb-8">
+      <main className="flex-1 flex flex-col p-4 max-w-lg mx-auto w-full relative">
+        {(step === 1 || step === 2) && (
+          <div className="flex-1 flex flex-col items-center justify-center fade-in pb-12">
+            
+            {/* Contextual AI Prompt */}
+            <div className="text-center w-full mb-8">
+              <div className="inline-flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full mb-4">
+                <Volume2 className="w-4 h-4 text-[#F5A623]" />
+                <span className="font-semibold text-[#F5A623] text-sm uppercase tracking-wider">AI Assistant</span>
+              </div>
+              <h2 className="text-3xl font-bold mb-2 shadow-sm drop-shadow-sm leading-tight px-4">
+                {step === 1 ? t.triageStep1 : statusText}
+              </h2>
+            </div>
+            
+            {/* Follow up dynamic questions */}
+            {step === 2 && statusText === "Please ask the patient:" && (
+               <div className="space-y-3 w-full px-2 mb-8 fade-in slide-up">
+                 <div className="bg-white/10 border-l-4 border-[#F5A623] p-4 rounded-r-xl shadow-md">
+                    <p className="font-medium text-lg mb-2">"Do you have swelling in your face or hands?"</p>
+                    <div className="flex gap-2 mt-3">
+                       <button onClick={() => handleFollowUpAnswer("Yes, swelling in feet and hands.")} className="bg-white text-[#0A6E4F] px-4 py-1.5 rounded-full font-bold text-sm">Yes</button>
+                       <button onClick={() => handleFollowUpAnswer("No swelling.")} className="bg-white/20 text-white px-4 py-1.5 rounded-full font-bold text-sm">No</button>
+                    </div>
+                 </div>
+                 <div className="bg-white/10 border-l-4 border-white/50 p-4 rounded-r-xl">
+                    <p className="font-medium text-lg">"Is your vision blurry?"</p>
+                 </div>
+               </div>
+            )}
+
+            {/* Mic Button */}
+            <div className="relative mb-6">
               {isRecording && (
                 <>
                   <div className="absolute inset-0 rounded-full bg-white/20 animate-pulse-ring"></div>
@@ -143,23 +203,24 @@ export default function VoiceAssessment() {
               )}
               <button
                 onClick={toggleRecording}
-                className={`relative z-10 w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300 shadow-2xl ${
+                className={`relative z-10 w-28 h-28 rounded-full flex items-center justify-center transition-all duration-300 shadow-2xl ${
                   isRecording ? "bg-destructive text-white scale-105" : "bg-white text-[#0A6E4F] hover:scale-105"
                 }`}
                 data-testid="button-mic"
               >
-                <Mic className={`w-12 h-12 ${isRecording ? "animate-pulse" : ""}`} />
+                <Mic className={`w-10 h-10 ${isRecording ? "animate-pulse" : ""}`} />
               </button>
             </div>
 
+            {/* Audio Waveform */}
             {isRecording && (
-              <div className="flex items-end gap-1 mb-6 h-10">
+              <div className="flex items-end gap-1.5 mb-6 h-8">
                 {[0, 150, 300, 450, 600].map((delay, i) => (
                   <div
                     key={i}
-                    className="w-2 bg-white/80 rounded-full origin-bottom"
+                    className="w-1.5 bg-white/80 rounded-full origin-bottom"
                     style={{
-                      height: "40px",
+                      height: "32px",
                       animation: "waveBar 0.8s ease-in-out infinite",
                       animationDelay: `${delay}ms`,
                     }}
@@ -168,59 +229,36 @@ export default function VoiceAssessment() {
               </div>
             )}
 
-            <p className="text-xl font-medium mb-4 text-center min-h-8">
-              {statusText || t.voicePrompt}
+            <p className="text-lg font-medium mb-4 text-center min-h-8 text-white/90">
+              {isRecording ? t.listening : (step === 1 ? t.voicePrompt : "Tap mic to answer")}
             </p>
 
-            {displayedTranscript && (
-              <div className="bg-white/10 rounded-xl p-4 w-full border border-white/20 backdrop-blur-sm mb-4 min-h-[80px] flex items-center justify-center">
-                {transcriptDone ? (
-                  <p
-                    className="text-base font-mono text-center leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: `"${highlightKeywords(displayedTranscript)}"` }}
-                  />
-                ) : (
-                  <p className="text-base font-mono text-center">"{displayedTranscript}"</p>
-                )}
-              </div>
-            )}
-
-            {!displayedTranscript && !isRecording && (
+            {/* Step 1 Pre-filled Chips */}
+            {step === 1 && !isRecording && (
               <div className="text-center w-full mt-4">
-                <p className="text-white/60 text-sm mb-4">{t.scenarioLabel}</p>
                 <div className="flex flex-wrap justify-center gap-2">
-                  <button
-                    onClick={() => handleDemoChip("Pregnant, headache, swelling")}
-                    data-testid="chip-maternal"
-                    className="bg-white/10 hover:bg-white/20 text-white text-xs px-4 py-2 rounded-full border border-white/20 transition-colors"
-                  >
-                    "Pregnant, headache, swelling"
-                  </button>
-                  <button
-                    onClick={() => handleDemoChip("Newborn, fever, not feeding")}
-                    data-testid="chip-newborn"
-                    className="bg-white/10 hover:bg-white/20 text-white text-xs px-4 py-2 rounded-full border border-white/20 transition-colors"
-                  >
-                    "Newborn, fever, not feeding"
-                  </button>
-                  <button
-                    onClick={() => handleDemoChip("Diabetic, missed medication")}
-                    data-testid="chip-ncd"
-                    className="bg-white/10 hover:bg-white/20 text-white text-xs px-4 py-2 rounded-full border border-white/20 transition-colors"
-                  >
-                    "Diabetic, missed medication"
-                  </button>
+                  <button onClick={() => handleDemoChip("Pregnant 8 months, headache, swelling")} className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2.5 rounded-full border border-white/20 transition-colors shadow-sm font-medium">Headache & Swelling</button>
+                  <button onClick={() => handleDemoChip("Newborn, fever, not feeding well")} className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2.5 rounded-full border border-white/20 transition-colors shadow-sm font-medium">Newborn Not Feeding</button>
+                   <button onClick={() => handleDemoChip("Pregnant, normal movement, some back pain")} className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2.5 rounded-full border border-white/20 transition-colors shadow-sm font-medium">Mild Back Pain</button>
                 </div>
               </div>
             )}
           </div>
         )}
 
-        {analysis && (
+        {/* Step 3: Analysis Result */}
+        {step === 3 && analysis && (
           <div className="flex-1 flex flex-col fade-in slide-up pb-safe">
-            <div className="bg-white/10 rounded-xl p-4 w-full border border-white/20 backdrop-blur-sm mb-4">
+            
+            {/* Disclaimer block mapping to trust & safety MVP features */}
+            <div className="bg-amber-900/40 border border-amber-500/30 rounded-xl p-3 mb-4 flex gap-3 text-amber-100 shadow-inner">
+               <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+               <p className="text-xs leading-relaxed opacity-90">{t.disclaimer}</p>
+            </div>
+
+            <div className="bg-white/10 rounded-xl p-4 w-full border border-white/20 backdrop-blur-sm mb-4 max-h-[100px] overflow-y-auto">
               <p
-                className="text-sm font-mono text-white/90 leading-relaxed"
+                className="text-sm font-mono text-white/90 leading-relaxed italic"
                 dangerouslySetInnerHTML={{ __html: `"${highlightKeywords(transcript)}"` }}
               />
             </div>
@@ -240,14 +278,21 @@ export default function VoiceAssessment() {
             >
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="w-5 h-5 text-primary" />
-                <h2 className="font-heading font-bold text-lg">AI Analysis</h2>
+                <h2 className="font-heading font-bold text-lg">{t.riskSupport}</h2>
               </div>
 
               <div className="mb-4">
                 <div className="flex items-start justify-between gap-4 mb-2">
-                  <h3 className="text-xl font-bold leading-tight">{analysis.condition}</h3>
+                  <h3 className="text-xl font-bold leading-tight text-slate-800 dark:text-slate-100">{analysis.condition}</h3>
                   <RiskBadge level={analysis.riskLevel} />
                 </div>
+                
+                {/* Confidence indicator mapping to Safety UI metric */}
+                <div className="flex items-center gap-1.5 mt-1 mb-3">
+                   <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                   <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">High AI Confidence</span>
+                </div>
+
                 <div className="bg-destructive/10 text-destructive border border-destructive/20 rounded-lg p-3 font-semibold text-sm flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
                   <p>{analysis.immediateAction}</p>
@@ -263,7 +308,7 @@ export default function VoiceAssessment() {
                   </div>
                   <button
                     data-testid="button-call-108"
-                    className="flex items-center gap-1 text-destructive font-bold text-sm border border-destructive/30 rounded-lg px-3 py-1.5 hover:bg-destructive/10 transition-colors"
+                    className="flex items-center gap-1 text-white bg-destructive font-bold text-sm border shadow-sm border-destructive/30 rounded-lg px-3 py-1.5 hover:bg-destructive/90 transition-colors"
                     onClick={() => toast({ title: "Calling 108", description: "Connecting to emergency ambulance service..." })}
                   >
                     <Phone className="w-3.5 h-3.5" />
@@ -273,19 +318,18 @@ export default function VoiceAssessment() {
               )}
 
               <div className="mb-4">
-                <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3">Detected Danger Signs</h4>
-                <ul className="space-y-2">
-                  {analysis.dangerSigns.map((sign, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-sm font-medium">
-                      <CheckCircle2 className="w-4 h-4 text-destructive shrink-0" />
-                      {sign}
-                    </li>
-                  ))}
-                </ul>
+                 <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Detected Danger Signs</h4>
+                 <div className="flex flex-wrap gap-2">
+                    {analysis.dangerSigns.map((sign, idx) => (
+                       <div key={idx} className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700">
+                          {sign}
+                       </div>
+                    ))}
+                 </div>
               </div>
 
               <div className="mb-auto">
-                <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3">Recommended Protocol</h4>
+                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Recommended Protocol</h4>
                 <div className="bg-muted/30 rounded-xl p-4 border border-border">
                   <ul className="space-y-3">
                     {analysis.steps.map((step, idx) => (
@@ -303,29 +347,29 @@ export default function VoiceAssessment() {
               {isCriticalOrHigh && (
                 <Button
                   data-testid="button-escalate"
-                  className="bg-destructive hover:bg-destructive/90 text-white h-14 rounded-xl font-bold shadow-lg w-full"
+                  className="bg-destructive hover:bg-destructive/90 text-white h-14 rounded-xl font-bold shadow-lg w-full text-base"
                   onClick={handleEscalate}
                 >
-                  <AlertTriangle className="w-4 h-4 mr-2" />
+                  <AlertTriangle className="w-5 h-5 mr-2" />
                   Escalate to Supervisor
                 </Button>
               )}
               <div className="grid grid-cols-2 gap-3">
                 <Button
                   variant="outline"
-                  className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white h-14 rounded-xl"
+                  className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white h-14 rounded-xl text-base"
                   onClick={resetAssessment}
                   data-testid="button-retake"
                 >
-                  <RefreshCw className="w-4 h-4 mr-2" />
+                  <RefreshCw className="w-5 h-5 mr-2" />
                   Retake
                 </Button>
                 <Button
-                  className="bg-white text-[#0A6E4F] hover:bg-gray-100 h-14 rounded-xl font-bold shadow-lg"
+                  className="bg-white text-[#0A6E4F] hover:bg-gray-100 h-14 rounded-xl font-bold shadow-lg text-base"
                   onClick={handleSave}
                   data-testid="button-save-visit"
                 >
-                  <Save className="w-4 h-4 mr-2" />
+                  <Save className="w-5 h-5 mr-2" />
                   Save Visit
                 </Button>
               </div>
